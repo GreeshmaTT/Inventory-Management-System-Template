@@ -33,7 +33,7 @@ public class Main_Window1 extends javax.swing.JFrame {
     public Connection getConnection (){
          Connection con = null;
         try{
-                    con = DriverManager.getConnection("jdbc:msql://localhost/products_db","root","");
+                    con = DriverManager.getConnection("jdbc:mysql://localhost:3306/products_db","root","");
                     JOptionPane.showMessageDialog(null,"Connected");
                     return con;
          } catch (SQLException ex) {
