@@ -1,13 +1,22 @@
 package java_project_1;
 
 import java.awt.Image;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import sun.util.logging.PlatformLogger;
 
 /*
@@ -43,8 +52,28 @@ public class Main_Window1 extends javax.swing.JFrame {
         }
     
     }
-
-/*    public ImageIcon ResizeImage(String imagePath,byte[] pic){ 
+//Check input fileds
+  public boolean checkInputs(){
+      if     (txt_name.getText()== null
+          || txt_price.getText()== null
+          || txt_qty.getText() == null)
+      {
+          return false;
+      }
+      else{
+          try{
+              Float.parseFloat(txt_price.getText());
+              return true;
+          }
+          catch(Exception ex){
+              return false;
+          }
+      }
+  }
+    
+//Resize image
+    String ImgPath = null;
+  public ImageIcon ResizeImage(String imagePath,byte[] pic){ 
                  ImageIcon myImage = null;
                  if(imagePath!= null){
                      myImage = new ImageIcon(imagePath);
@@ -53,7 +82,11 @@ public class Main_Window1 extends javax.swing.JFrame {
                      myImage = new ImageIcon(pic);
                  }
                  Image img = myImage.getImage();
-    }*/
+                 Image img2 = img.getScaledInstance(lbl_image.getWidth(),lbl_image.getHeight(),Image.SCALE_SMOOTH);
+                 ImageIcon image = new ImageIcon(img2);
+                 return image;
+    }
+  
     
 
     /**
@@ -73,22 +106,22 @@ public class Main_Window1 extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
-        dateChooserCombo1 = new datechooser.beans.DateChooserCombo();
+        txt_name = new javax.swing.JTextField();
+        txt_price = new javax.swing.JTextField();
+        txt_id = new javax.swing.JTextField();
         jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
+        lbl_image = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        jButton9 = new javax.swing.JButton();
-        jButton11 = new javax.swing.JButton();
-        jButton12 = new javax.swing.JButton();
+        Btn_choose_image = new javax.swing.JButton();
+        Btn_Insert = new javax.swing.JButton();
+        Btn_update = new javax.swing.JButton();
+        Btn_last = new javax.swing.JButton();
+        Btn_delete = new javax.swing.JButton();
+        Btn_previous = new javax.swing.JButton();
+        Btn_first = new javax.swing.JButton();
+        Btn_next = new javax.swing.JButton();
+        txt_qty = new javax.swing.JTextField();
 
         jLabel2.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(0, 102, 51));
@@ -107,7 +140,7 @@ public class Main_Window1 extends javax.swing.JFrame {
 
         jLabel3.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 51, 0));
-        jLabel3.setText("Add Date:");
+        jLabel3.setText("Quantity:");
 
         jLabel4.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 51, 0));
@@ -121,10 +154,8 @@ public class Main_Window1 extends javax.swing.JFrame {
         jLabel6.setForeground(new java.awt.Color(255, 51, 0));
         jLabel6.setText("Name:");
 
-        dateChooserCombo1.setFormat(2);
-
-        jLabel8.setBackground(new java.awt.Color(51, 204, 255));
-        jLabel8.setOpaque(true);
+        lbl_image.setBackground(new java.awt.Color(51, 204, 255));
+        lbl_image.setOpaque(true);
 
         jTable1.setBackground(new java.awt.Color(0, 0, 0));
         jTable1.setForeground(new java.awt.Color(255, 51, 0));
@@ -138,61 +169,86 @@ public class Main_Window1 extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(jTable1);
 
-        jButton1.setBackground(new java.awt.Color(255, 51, 0));
-        jButton1.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        jButton1.setText("CHOOSE IMAGE");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        Btn_choose_image.setBackground(new java.awt.Color(255, 51, 0));
+        Btn_choose_image.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        Btn_choose_image.setText("CHOOSE IMAGE");
+        Btn_choose_image.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                Btn_choose_imageActionPerformed(evt);
             }
         });
 
-        jButton2.setBackground(new java.awt.Color(255, 51, 0));
-        jButton2.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/project_icons/insert.png"))); // NOI18N
-        jButton2.setText("Insert");
-        jButton2.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-
-        jButton3.setBackground(new java.awt.Color(255, 51, 0));
-        jButton3.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/project_icons/refresh.png"))); // NOI18N
-        jButton3.setText("Update");
-        jButton3.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-
-        jButton4.setBackground(new java.awt.Color(255, 51, 0));
-        jButton4.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/project_icons/last.png"))); // NOI18N
-        jButton4.setText("Last");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        Btn_Insert.setBackground(new java.awt.Color(255, 51, 0));
+        Btn_Insert.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        Btn_Insert.setIcon(new javax.swing.ImageIcon(getClass().getResource("/project_icons/insert.png"))); // NOI18N
+        Btn_Insert.setText("Insert");
+        Btn_Insert.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        Btn_Insert.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                Btn_InsertActionPerformed(evt);
             }
         });
 
-        jButton5.setBackground(new java.awt.Color(255, 51, 0));
-        jButton5.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/project_icons/deletesign.png"))); // NOI18N
-        jButton5.setText("Delete");
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
+        Btn_update.setBackground(new java.awt.Color(255, 51, 0));
+        Btn_update.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        Btn_update.setIcon(new javax.swing.ImageIcon(getClass().getResource("/project_icons/refresh.png"))); // NOI18N
+        Btn_update.setText("Update");
+        Btn_update.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        Btn_update.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
+                Btn_updateActionPerformed(evt);
             }
         });
 
-        jButton9.setBackground(new java.awt.Color(255, 51, 0));
-        jButton9.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/project_icons/previous.png"))); // NOI18N
-        jButton9.setText("Previous");
+        Btn_last.setBackground(new java.awt.Color(255, 51, 0));
+        Btn_last.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        Btn_last.setIcon(new javax.swing.ImageIcon(getClass().getResource("/project_icons/last.png"))); // NOI18N
+        Btn_last.setText("Last");
+        Btn_last.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Btn_lastActionPerformed(evt);
+            }
+        });
 
-        jButton11.setBackground(new java.awt.Color(255, 51, 0));
-        jButton11.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        jButton11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/project_icons/first.png"))); // NOI18N
-        jButton11.setText("First");
+        Btn_delete.setBackground(new java.awt.Color(255, 51, 0));
+        Btn_delete.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        Btn_delete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/project_icons/deletesign.png"))); // NOI18N
+        Btn_delete.setText("Delete");
+        Btn_delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Btn_deleteActionPerformed(evt);
+            }
+        });
 
-        jButton12.setBackground(new java.awt.Color(255, 51, 0));
-        jButton12.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
-        jButton12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/project_icons/next.png"))); // NOI18N
-        jButton12.setText("Next");
+        Btn_previous.setBackground(new java.awt.Color(255, 51, 0));
+        Btn_previous.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        Btn_previous.setIcon(new javax.swing.ImageIcon(getClass().getResource("/project_icons/previous.png"))); // NOI18N
+        Btn_previous.setText("Previous");
+        Btn_previous.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Btn_previousActionPerformed(evt);
+            }
+        });
+
+        Btn_first.setBackground(new java.awt.Color(255, 51, 0));
+        Btn_first.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        Btn_first.setIcon(new javax.swing.ImageIcon(getClass().getResource("/project_icons/first.png"))); // NOI18N
+        Btn_first.setText("First");
+        Btn_first.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Btn_firstActionPerformed(evt);
+            }
+        });
+
+        Btn_next.setBackground(new java.awt.Color(255, 51, 0));
+        Btn_next.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        Btn_next.setIcon(new javax.swing.ImageIcon(getClass().getResource("/project_icons/next.png"))); // NOI18N
+        Btn_next.setText("Next");
+        Btn_next.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Btn_nextActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -201,88 +257,94 @@ public class Main_Window1 extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(38, 38, 38)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(jLabel1)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jTextField2)
-                            .addComponent(jTextField1)
-                            .addComponent(jTextField3)
-                            .addComponent(dateChooserCombo1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 232, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(Btn_Insert, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(Btn_update, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(46, 46, 46)))
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(Btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+                        .addComponent(Btn_first, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(Btn_previous, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(126, 126, 126)
+                        .addComponent(Btn_next, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(Btn_last, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton11, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton9, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(14, 14, 14)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel5)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jLabel1)
+                                    .addComponent(jLabel6)
+                                    .addComponent(jLabel4)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel3)
+                                .addGap(3, 3, 3)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 642, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(txt_price, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(txt_name, javax.swing.GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE)
+                                    .addComponent(lbl_image, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(txt_id)
+                                    .addComponent(Btn_choose_image, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(txt_qty, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(673, 673, 673)))
                 .addComponent(jLabel7))
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 642, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(38, 38, 38)
+                .addGap(41, 41, 41)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txt_id, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel1))
-                        .addGap(14, 14, 14)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel6))
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(txt_price, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel4))
-                        .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(dateChooserCombo1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txt_qty, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel3))
-                        .addGap(73, 73, 73)
-                        .addComponent(jLabel5)
-                        .addGap(19, 19, 19)
-                        .addComponent(jLabel7))
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(jButton1))
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(11, 11, 11)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(lbl_image, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(Btn_choose_image)
+                                .addGap(6, 6, 6))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(88, 88, 88)
+                                .addComponent(jLabel5)
+                                .addGap(19, 19, 19)
+                                .addComponent(jLabel7))))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(14, 14, 14)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton11)
-                        .addComponent(jButton9))
+                        .addComponent(Btn_Insert, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(Btn_update, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(Btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(Btn_first)
+                        .addComponent(Btn_previous))
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jButton12, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(Btn_last, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(Btn_next, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -290,30 +352,136 @@ public class Main_Window1 extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 675, Short.MAX_VALUE))
+                .addContainerGap(664, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 59, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void Btn_lastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Btn_lastActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }//GEN-LAST:event_Btn_lastActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void Btn_choose_imageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Btn_choose_imageActionPerformed
+            JFileChooser file = new  JFileChooser();
+            file.setCurrentDirectory(new File(System.getProperty("user.home")));
+            
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("*.image","jpg","png");
+            file.addChoosableFileFilter(filter);
+            int result = file.showSaveDialog(null);
+            if(result == JFileChooser.APPROVE_OPTION){
+                File selectedFile = file.getSelectedFile();
+                String path = selectedFile.getAbsolutePath();
+                lbl_image.setIcon(ResizeImage(path,null));
+                ImgPath = path;
+            }
+            else{
+                System.out.println("No File Selected");
+            }
+            
+    }//GEN-LAST:event_Btn_choose_imageActionPerformed
 
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    private void Btn_deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Btn_deleteActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton5ActionPerformed
+    }//GEN-LAST:event_Btn_deleteActionPerformed
+
+    private void Btn_InsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Btn_InsertActionPerformed
+         if(checkInputs() && ImgPath != null){
+             
+             try{
+             Connection con = getConnection();
+             PreparedStatement ps = con.prepareStatement("INSERT INTO products(name,price,quantity,image)"+"values(?,?,?,?)");
+             ps.setString(1,txt_name.getText());
+             ps.setString(2,txt_price.getText());
+             ps.setString(3,txt_qty.getText());
+             
+//             SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yy");
+//             String addDate = dateFormat.format(txt_AddDate.getText());
+//             ps.setString(3, addDate);
+             
+             InputStream img = new FileInputStream(new File(ImgPath));
+             ps.setBlob(4,img);
+             ps.executeUpdate();
+             
+             JOptionPane.showMessageDialog(null,"Data Entry");
+             
+            } catch (Exception ex) {
+                 JOptionPane.showMessageDialog(null,ex.getMessage());
+             }
+         }
+         else{
+             JOptionPane.showMessageDialog(null,"One or More Fields Empty");
+         }
+    }//GEN-LAST:event_Btn_InsertActionPerformed
+
+    private void Btn_updateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Btn_updateActionPerformed
+        if(checkInputs() && txt_id.getText() != null){
+            String UpdateQuery = null;
+            PreparedStatement ps = null;
+            Connection con = getConnection();
+ //update without image
+            if(ImgPath == null){
+                try {
+                    UpdateQuery = "UPDATE products SET name = ?, price = ?"+
+                                   ", quantity = ? WHERE id = ?";
+                    ps = con.prepareStatement(UpdateQuery);
+                    
+                    ps.setString(1,txt_name.getText());
+                    ps.setString(2,txt_price.getText());
+                    ps.setString(3,txt_qty.getText());
+                    ps.setInt(4,Integer.parseInt(txt_id.getText()));
+                    ps.executeUpdate();
+                    
+                } catch (SQLException ex) {
+                    Logger.getLogger(Main_Window1.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            //update with image
+            else{
+                    
+               try {
+                    InputStream img = new FileInputStream(new File (ImgPath));
+                    UpdateQuery = "UPDATE products SET name = ?, price = ?"+
+                                  ", quantity = ?, image = ? WHERE id = ?";
+                    
+                    ps.setString(1,txt_name.getText());
+                    ps.setString(2,txt_price.getText());
+                    ps.setString(3,txt_qty.getText());
+                    ps.setBlob(4, img);
+                    ps.setInt(5,Integer.parseInt(txt_id.getText()));
+                    ps.executeUpdate();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null,ex.getMessage());
+                    
+                    
+                } 
+                          
+            }
+         }
+        else{
+            JOptionPane.showMessageDialog(null,"One or More Fields Empty or Wrong");
+        }
+    }//GEN-LAST:event_Btn_updateActionPerformed
+
+    private void Btn_firstActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Btn_firstActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_Btn_firstActionPerformed
+
+    private void Btn_previousActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Btn_previousActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_Btn_previousActionPerformed
+
+    private void Btn_nextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Btn_nextActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_Btn_nextActionPerformed
 
     /**
      * @param args the command line arguments
@@ -351,16 +519,15 @@ public class Main_Window1 extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton Btn_Insert;
+    private javax.swing.JButton Btn_choose_image;
+    private javax.swing.JButton Btn_delete;
+    private javax.swing.JButton Btn_first;
+    private javax.swing.JButton Btn_last;
+    private javax.swing.JButton Btn_next;
+    private javax.swing.JButton Btn_previous;
+    private javax.swing.JButton Btn_update;
     private javax.swing.ButtonGroup buttonGroup1;
-    private datechooser.beans.DateChooserCombo dateChooserCombo1;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton11;
-    private javax.swing.JButton jButton12;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -368,12 +535,13 @@ public class Main_Window1 extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JLabel lbl_image;
+    private javax.swing.JTextField txt_id;
+    private javax.swing.JTextField txt_name;
+    private javax.swing.JTextField txt_price;
+    private javax.swing.JTextField txt_qty;
     // End of variables declaration//GEN-END:variables
 }
