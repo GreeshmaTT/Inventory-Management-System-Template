@@ -48,11 +48,11 @@ public class Main_Window1 extends javax.swing.JFrame {
          Connection con = null;
         try{
                     con = DriverManager.getConnection("jdbc:mysql://localhost:3306/products_db","root","");
-                    JOptionPane.showMessageDialog(null,"Connected");
+                   //OptionPane.showMessageDialog(null,"Connected");
                     return con;
          } catch (SQLException ex) {
             Logger.getLogger(Main_Window1.class.getName()).log(Level.SEVERE, null, ex);
-            JOptionPane.showMessageDialog(null,"Not Connected");
+           //OptionPane.showMessageDialog(null,"Not Connected");
             return null;
         }
     
@@ -78,6 +78,7 @@ public class Main_Window1 extends javax.swing.JFrame {
     
 //Resize image
     String ImgPath = null;
+    int pos=0;
   public ImageIcon ResizeImage(String imagePath,byte[] pic){ 
                  ImageIcon myImage = null;
                  if(imagePath!= null){
@@ -125,7 +126,8 @@ public class Main_Window1 extends javax.swing.JFrame {
       public void Show_Products_In_JTable(){
           ArrayList<Product1> list = getProduct1List();
           DefaultTableModel model =(DefaultTableModel)JTable_Products.getModel();
-          
+          //clear jtable content
+          model.setRowCount(0);
           Object[] row = new Object[4];
           for(int i=0;i<list.size();i++){
               row[0] = list.get(i).getId();
@@ -142,7 +144,6 @@ public class Main_Window1 extends javax.swing.JFrame {
       txt_name.setText(getProduct1List().get(index).getName());
       txt_price.setText(Float.toString(getProduct1List().get(index).getPrice()));
       txt_qty.setText(Float.toString(getProduct1List().get(index).getQuantity()));
-      
       lbl_image.setIcon(ResizeImage(null,getProduct1List().get(index).getPicture()));
   }
     /**
@@ -178,6 +179,7 @@ public class Main_Window1 extends javax.swing.JFrame {
         Btn_first = new javax.swing.JButton();
         Btn_next = new javax.swing.JButton();
         txt_qty = new javax.swing.JTextField();
+        Btn_clear = new javax.swing.JButton();
 
         jLabel2.setFont(new java.awt.Font("Times New Roman", 1, 18)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(0, 102, 51));
@@ -210,6 +212,8 @@ public class Main_Window1 extends javax.swing.JFrame {
         jLabel6.setForeground(new java.awt.Color(255, 51, 0));
         jLabel6.setText("Name:");
 
+        txt_id.setEnabled(false);
+
         lbl_image.setBackground(new java.awt.Color(51, 204, 255));
         lbl_image.setOpaque(true);
 
@@ -223,6 +227,11 @@ public class Main_Window1 extends javax.swing.JFrame {
                 "ID", "Name", "Price", "Quantity"
             }
         ));
+        JTable_Products.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                JTable_ProductsMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(JTable_Products);
 
         Btn_choose_image.setBackground(new java.awt.Color(255, 51, 0));
@@ -306,6 +315,15 @@ public class Main_Window1 extends javax.swing.JFrame {
             }
         });
 
+        Btn_clear.setBackground(new java.awt.Color(255, 102, 0));
+        Btn_clear.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
+        Btn_clear.setText("Clear");
+        Btn_clear.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                Btn_clearActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -319,11 +337,11 @@ public class Main_Window1 extends javax.swing.JFrame {
                         .addComponent(Btn_update, javax.swing.GroupLayout.PREFERRED_SIZE, 111, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(Btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+                        .addGap(18, 18, 18)
                         .addComponent(Btn_first, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(Btn_previous, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(126, 126, 126)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(Btn_next, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(Btn_last, javax.swing.GroupLayout.PREFERRED_SIZE, 119, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -340,7 +358,7 @@ public class Main_Window1 extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel3)
                                 .addGap(3, 3, 3)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 65, Short.MAX_VALUE)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                 .addComponent(txt_price, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -353,7 +371,9 @@ public class Main_Window1 extends javax.swing.JFrame {
                         .addGap(673, 673, 673)))
                 .addComponent(jLabel7))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
+                .addGap(190, 190, 190)
+                .addComponent(Btn_clear, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(75, 75, 75)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 642, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -388,19 +408,26 @@ public class Main_Window1 extends javax.swing.JFrame {
                                 .addGap(88, 88, 88)
                                 .addComponent(jLabel5)
                                 .addGap(19, 19, 19)
-                                .addComponent(jLabel7))))
+                                .addComponent(jLabel7)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(Btn_clear, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(14, 14, 14)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(Btn_Insert, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(Btn_update, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(Btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(Btn_first)
-                        .addComponent(Btn_previous))
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(Btn_last, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(Btn_next, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(Btn_Insert, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(Btn_update, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(Btn_delete, javax.swing.GroupLayout.PREFERRED_SIZE, 47, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(Btn_last, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(Btn_next, javax.swing.GroupLayout.PREFERRED_SIZE, 44, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(Btn_first)
+                            .addComponent(Btn_previous)))))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -423,7 +450,8 @@ public class Main_Window1 extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void Btn_lastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Btn_lastActionPerformed
-        // TODO add your handling code here:
+        pos = getProduct1List().size()-1;
+        ShowItem(pos);
     }//GEN-LAST:event_Btn_lastActionPerformed
 
     private void Btn_choose_imageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Btn_choose_imageActionPerformed
@@ -454,7 +482,8 @@ public class Main_Window1 extends javax.swing.JFrame {
             int id = Integer.parseInt(txt_id.getText());
             ps.setInt(1,id);
             ps.executeUpdate();
-            JOptionPane.showMessageDialog(null,"product deleted");
+            Show_Products_In_JTable();
+            JOptionPane.showMessageDialog(null,"Product Deleted");
         }   catch (SQLException ex) {
                 Logger.getLogger(Main_Window1.class.getName()).log(Level.SEVERE, null, ex);
                 JOptionPane.showMessageDialog(null,"product deleted");
@@ -486,6 +515,11 @@ public class Main_Window1 extends javax.swing.JFrame {
              Show_Products_In_JTable();
              
              JOptionPane.showMessageDialog(null,"Data Entry");
+               txt_id.setText(null);
+               txt_name.setText(null);
+               txt_price.setText(null);
+               txt_qty.setText(null);
+               lbl_image.setIcon(null);
              
             } catch (Exception ex) {
                  JOptionPane.showMessageDialog(null,ex.getMessage());
@@ -513,10 +547,21 @@ public class Main_Window1 extends javax.swing.JFrame {
                     ps.setString(3,txt_qty.getText());
                     ps.setInt(4,Integer.parseInt(txt_id.getText()));
                     ps.executeUpdate();
+                    Show_Products_In_JTable();
+                    
+                     JOptionPane.showMessageDialog(null,"product updated");
+                       txt_id.setText(null);
+                       txt_name.setText(null);
+                       txt_price.setText(null);
+                       txt_qty.setText(null);
+                       lbl_image.setIcon(null);
                     
                 } catch (SQLException ex) {
                     Logger.getLogger(Main_Window1.class.getName()).log(Level.SEVERE, null, ex);
+                     JOptionPane.showMessageDialog(null,"Product is not updated");
                 }
+            
+      
             }
             //update with image
             else{
@@ -532,6 +577,13 @@ public class Main_Window1 extends javax.swing.JFrame {
                     ps.setBlob(4, img);
                     ps.setInt(5,Integer.parseInt(txt_id.getText()));
                     ps.executeUpdate();
+                     Show_Products_In_JTable();
+                      JOptionPane.showMessageDialog(null,"product updated");
+                        txt_id.setText(null);
+                        txt_name.setText(null);
+                        txt_price.setText(null);
+                        txt_qty.setText(null);
+                        lbl_image.setIcon(null);
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(null,ex.getMessage());
                     
@@ -546,16 +598,39 @@ public class Main_Window1 extends javax.swing.JFrame {
     }//GEN-LAST:event_Btn_updateActionPerformed
 
     private void Btn_firstActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Btn_firstActionPerformed
-        // TODO add your handling code here:
+        pos=0;
+        ShowItem(pos);
     }//GEN-LAST:event_Btn_firstActionPerformed
 
     private void Btn_previousActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Btn_previousActionPerformed
-        // TODO add your handling code here:
+        pos--;
+        if(pos<0){
+            pos = 0;
+        }
+        ShowItem(pos);
     }//GEN-LAST:event_Btn_previousActionPerformed
 
     private void Btn_nextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Btn_nextActionPerformed
-        // TODO add your handling code here:
+        pos++;
+        if(pos >= getProduct1List().size()){
+            pos = getProduct1List().size()-1;
+        }
+        ShowItem(pos);
     }//GEN-LAST:event_Btn_nextActionPerformed
+
+    private void JTable_ProductsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_JTable_ProductsMouseClicked
+        // TODO add your handling code here:
+           int index = JTable_Products.getSelectedRow();
+           ShowItem(index);
+    }//GEN-LAST:event_JTable_ProductsMouseClicked
+
+    private void Btn_clearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Btn_clearActionPerformed
+     txt_id.setText(null);
+      txt_name.setText(null);
+      txt_price.setText(null);
+      txt_qty.setText(null);
+      lbl_image.setIcon(null);
+    }//GEN-LAST:event_Btn_clearActionPerformed
 
     /**
      * @param args the command line arguments
@@ -595,6 +670,7 @@ public class Main_Window1 extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Btn_Insert;
     private javax.swing.JButton Btn_choose_image;
+    private javax.swing.JButton Btn_clear;
     private javax.swing.JButton Btn_delete;
     private javax.swing.JButton Btn_first;
     private javax.swing.JButton Btn_last;
